@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h1 #{title}: #{badge.title}
+
+    p #[strong Number of achievers:] !{badgeInstances.length}
+
+    div(style='margin-left:20px;margin-top:20px')
+        h4 Achievers
+
+        each val in badgeInstances
+            hr
+            a(href=val.user.url) #{val.user.name}
+            p #[strong Obtained:] #{val.dateObtainedStr}

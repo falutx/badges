@@ -1,0 +1,29 @@
+extends layout
+
+block content
+    h1 #{title}: #{user.name}
+    
+    p 
+        a(href=user.url+'/update') Edit User
+        |   |
+        a(href=user.url+'/delete') Delete User
+        |   |
+        a(href=user.url+'/badges/create') Add badge
+    hr
+    p #[strong email:] #{user.email}
+
+    p #[strong Date of birth:] !{user.dateOfBirthStr}
+
+    p #[strong Number of achievements:] !{user_badges.length}
+
+    div(style='margin-left:20px;margin-top:20px')
+        h4 Achievements
+        each val in user_badges
+            hr
+            if val.badge.image
+                img(src=val.badge.image)
+            a(href=val.badge.url) #{val.badge.title}
+            p #[strong Obtained:] #{val.dateObtainedStr}
+            a(href=val.url + '/delete') Delete
+            |   |
+            a(href=val.url + '/update') Update

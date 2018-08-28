@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    h1=title
+
+    form(method='POST', action='')
+        div.form-group
+            label(for='title') Title:
+            input#title.form-control(type='text' placeholder='Best of the world' name='title' required='true' value=(undefined===badge ? '' : badge.title))
+            label(for='image') Image URL:
+            input#image.form-control(type='text' placeholder='/images/badge.png' name='image' value=(undefined===badge ? '' : badge.image))
+        button.btn.btn-primary(type='submit') Submit
+
+    if errors 
+        ul
+            for error in errors
+                li!= error.msg

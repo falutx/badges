@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    h1 #{title}: #{user.name}
+
+    hr
+    p #[strong email:] #{user.email}
+
+    p #[strong Number of achievements:] !{user_badges.length}
+
+    p Do you really want to delete this User?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#userId.form-control(type='hidden',name='userId', required='true', value=user._id )
+
+      button.btn.btn-primary(type='submit') Delete

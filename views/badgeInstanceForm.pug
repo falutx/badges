@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    h1=title
+
+    form(method='POST', action='')
+        div.form-group
+            label(for='user') User: #{user.name}
+            input#user.form-control(type='hidden' name='user' required='true' value=(undefined===user ? '' : user._id))
+            label(for='badge') Badge:
+            select#badge.form-control(type='select', placeholder='Select badge' name='badge' required='true' )
+                for badge in badges
+                    if badgeInstance
+                        option(value=badge._id selected=(badge._id.toString()==badgeInstance.badge ? 'selected' : false) ) #{badge.title}
+                    else
+                        option(value=badge._id) #{badge.title}
+            label(for='dateObtained') Date obtained:
+            input#dateObtained.form-control(type='date' name='dateObtained' required=true value=(undefined===badgeInstance ? '' : badgeInstance.dateObtained))
+
+        button.btn.btn-primary(type='submit') Submit
+
+    if errors 
+        ul
+            for error in errors
+                li!= error.msg

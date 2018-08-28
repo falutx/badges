@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    h1= title
+
+    ul
+        each badge in badges
+            li
+                if badge.image
+                    img(src=badge.image)
+                a(href=badge.url) #{badge.title}
+        else
+            li There are no badges

@@ -1,0 +1,18 @@
+extends layout
+
+block content
+    h1 #{title}: #{badgeInstance.user.name}
+
+    if badgeInstance.badge.image
+        img(src=badgeInstance.badge.image)
+    
+    p #{badgeInstance.badge.title} -
+        span.text-success #{badgeInstance.dateObtainedStr}
+
+    p Do you really want to delete this Badge?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#badgeInstanceid.form-control(type='hidden',name='badgeInstanceId', required='true', value=badgeInstance._id )
+
+      button.btn.btn-primary(type='submit') Delete

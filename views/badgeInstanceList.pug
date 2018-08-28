@@ -1,0 +1,14 @@
+extend layout
+block content
+    h1= title
+
+    ul
+        each badge in badgeInstanceList
+            li
+                if badge.badge.image
+                    img(src=badge.badge.image)
+                a(href=badge.url) #{badge.badge.title} -
+                    span.text-success #{badge.dateObtainedStr} -
+                        #{badge.user.name}
+        else
+            li There are no badges obtained by users
