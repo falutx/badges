@@ -10,4 +10,9 @@ router.post('/users/:id/delete', apiController.user_delete);
 router.post('/users/:id/update', apiController.user_update);
 
 router.get('/badgeInstances/byUserEmail/:email', apiController.badgeInstances_byUserEmail)
+
+router.get('/badges', apiController.badge_list);
+router.get('/badges/:id', apiController.badge_get);
+router.put('/badges/:id/update', apiController.badge_update);
+
 module.exports = router;

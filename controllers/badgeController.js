@@ -1,12 +1,17 @@
 var Badge = require("../models/badge");
 var badgeInstance = require('../models/badgeInstance');
 var User = require('../models/user');
+var BadgeSrv = require("../service/badgeSrv");
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 var async = require('async');
 
 exports.index = function(req, res) {
+    BadgeSrv.getBadges(function(err, results) {
+        res.render('index', {title: 'Showcase Home', error: err, data: results });
+    });
+
     async.parallel({
         badge_count: (callback) => {
             Badge.countDocuments({}, callback);
@@ -17,15 +22,14 @@ exports.index = function(req, res) {
         user_count: (callback) => {
             User.countDocuments({}, callback);
         }
-    }, (err, results) => {
+    }, function(err, results) {
         res.render('index', {title: 'Showcase Home', error: err, data: results });
     });
 }
 
 // Display the list of badges
 exports.badge_list = function(req, res, next) {
-    Badge.find({}, 'title image')
-    .exec((err, badges) => {
+    BadgeSrv.getBadges(function(err, badges) {
         if (err) {return next(err); }
         res.render('badgeList', {title: 'Badge List', badges: badges});
     });
@@ -35,8 +39,7 @@ exports.badge_list = function(req, res, next) {
 exports.badge_detail = function(req, res, next) {
     async.parallel({
         badge: function(callback) {
-            Badge.findById(req.params.id)
-                .exec(callback);
+            BadgeSrv.getBadge(req.params.id, callback);
         },
         badgeInstances: function(callback) {
             badgeInstance.find({badge: req.params.id})
