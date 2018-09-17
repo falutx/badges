@@ -9,15 +9,19 @@ var apiRouter = require('./routes/api');
 var usersRouter = require('./routes/users');
 var showcaseRouter = require('./routes/showcase');
 
+var config = require('./config');
+
 var app = express();
 
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://localhost/badges';
+var mongoDB = config.db.constring;
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+app.set('port', config.app.port)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
