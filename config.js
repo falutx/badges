@@ -4,11 +4,11 @@
 
 const config = {
     app: {
-        port: process.env.APP_PORT || 3000
+        port: process.env.APP_PORT || 8081
     },
     db: {
-        constring: process.env.DB_CONSTRING || 'mongodb://localhost/badges',
-        port: 27017
+        constring: process.env.DB_CONSTRING || 'mongodb://admin:changem3@ds237489.mlab.com:37489/badges',
+        port: 37489
     }
 }
 
