@@ -22,7 +22,7 @@ var genRandomString = function(length){
  * @param {string} password 
  * @param {string} salt 
  */
-exports.sha512 = function(password, salt){
+var sha512 = function(password, salt){
     var hash = crypto.createHmac('sha512', salt); /** Hashing algorithm sha512 */
     hash.update(password);
     var value = hash.digest('hex');
@@ -34,7 +34,7 @@ exports.sha512 = function(password, salt){
 
 exports.saltHashPassword = function(userpassword, callback) {
     var salt = genRandomString(16); /** Gives us salt of length 16 */
-    var passwordData = this.sha512(userpassword, salt);
+    var passwordData = sha512(userpassword, salt);
 
     console.log('UserPassword = '+userpassword);
     console.log('Passwordhash = '+passwordData.passwordHash);
@@ -46,15 +46,13 @@ exports.saltHashPassword = function(userpassword, callback) {
 
 // Validate user
 exports.validateLogin = function(user, myCallback) {
-    var dbUser = this.getUserByEmail(user.email, function(err, result){
+    this.getUserByEmail(user.email, function(err, dbUser){
         if (err) { myCallback(err); }
-        if (result == null) {
-            var err = new Error('User not found');
-            err.status = 404;
-            myCallback(err);            
+        if (dbUser == null) {
+            myCallback(null, false);            
         }
 
-        var value = this.sha512(user.password, dbUser.salt);
+        var value = sha512(user.password, dbUser.salt);
         myCallback(null, (value.passwordHash === dbUser.password));
     });
 }

@@ -20,7 +20,7 @@ exports.user_login_post = [
     sanitizeBody('email').trim().escape(),
     (req, res, next) => {
         const error = validationResult(req);
-        if (!errors.isEmpty()) {
+        if (!error.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
             res.render('userForm', { title: 'Create user', user: req.body, errors: errors.array() });
             return;
@@ -37,7 +37,7 @@ exports.user_login_post = [
             if (isOk) {
                 // Create session cookie
             } else {
-                res.render('userLogin', {title: 'User login', message: 'Invalid credentials'})
+                res.render('userLogin', {title: 'User login', errors: [{msg:'Invalid credentials'}]})
             }
         })
 }]
