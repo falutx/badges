@@ -5,6 +5,8 @@ var moment = require('moment');
 var Schema = mongoose.Schema;
 var userSchema = new Schema({
     email: {type: String, required: true},
+    password: {type: String, required: true},
+    salt: {type:String, max: 16},
     first_name: {type: String, required: true, max: 100},
     family_name: {type: String, required: true, max: 100},
     date_of_birth: {type: Date},

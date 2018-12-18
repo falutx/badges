@@ -5,6 +5,12 @@ var router = express.Router();
 var userController = require('../controllers/userController');
 var badgeInstanceController = require('../controllers/badgeInstanceController');
 
+/* AUTH */
+router.get('/login', userController.user_login_get);
+router.post('/login', userController.user_login_post);
+router.get('/signup', userController.user_signup_get);
+router.post('/signup', userController.user_create_post);
+
 /* GET users listing. */
 router.get('/', userController.user_list);
 router.get('/create', userController.user_create_get);

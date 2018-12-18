@@ -3,12 +3,72 @@ var badgeInstance = require('../models/badgeInstance');
 var async = require('async');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
+const crypto = require('crypto');
+
+/**
+ * generates random string of characters i.e salt
+ * @function
+ * @param {number} length - Length of the random string.
+ */
+var genRandomString = function(length){
+    return crypto.randomBytes(Math.ceil(length/2))
+            .toString('hex') /** convert to hexadecimal format */
+            .slice(0,length);   /** return required number of characters */
+};
+
+/**
+ * hash password with sha512.
+ * @function
+ * @param {string} password 
+ * @param {string} salt 
+ */
+exports.sha512 = function(password, salt){
+    var hash = crypto.createHmac('sha512', salt); /** Hashing algorithm sha512 */
+    hash.update(password);
+    var value = hash.digest('hex');
+    return {
+        salt:salt,
+        passwordHash:value
+    };
+};
+
+exports.saltHashPassword = function(userpassword, callback) {
+    var salt = genRandomString(16); /** Gives us salt of length 16 */
+    var passwordData = this.sha512(userpassword, salt);
+
+    console.log('UserPassword = '+userpassword);
+    console.log('Passwordhash = '+passwordData.passwordHash);
+    console.log('nSalt = '+passwordData.salt);
+
+    callback(null, passwordData);
+}
+
+
+// Validate user
+exports.validateLogin = function(user, myCallback) {
+    var dbUser = this.getUserByEmail(user.email, function(err, result){
+        if (err) { myCallback(err); }
+        if (result == null) {
+            var err = new Error('User not found');
+            err.status = 404;
+            myCallback(err);            
+        }
+
+        var value = this.sha512(user.password, dbUser.salt);
+        myCallback(null, (value.passwordHash === dbUser.password));
+    });
+}
 
 // Display the list of users
 exports.getUsers = function(callback) {
     User.find()
     .sort([['family_name', 'asc']])
     .exec(callback);
+}
+
+exports.getUserByEmail = function(email, myCallback) {
+    User.findOne({email: email})
+        .exec(myCallback);
 }
 
 exports.getUserById = function(id, myCallback) {

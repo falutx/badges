@@ -6,6 +6,42 @@ const { sanitizeBody } = require('express-validator/filter');
 
 var userSrv = require('../service/userSrv');
 
+exports.user_signup_get = function(req, res, next) {
+    res.render('userForm', {title: 'User Sign up'});
+}
+
+exports.user_login_get = function(req, res, next) {
+    res.render('userLogin', {title: 'User login'});
+}
+
+// Check user  password
+exports.user_login_post = [
+    // Sanitize fields.
+    sanitizeBody('email').trim().escape(),
+    (req, res, next) => {
+        const error = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            res.render('userForm', { title: 'Create user', user: req.body, errors: errors.array() });
+            return;
+        }
+        // Data from form is valid
+        // Create user data
+        var user = new User({
+            email: req.body.email,
+            password: req.body.password
+        });
+
+        userSrv.validateLogin(user, function(err, isOk) {
+            if (err) { return next(err); }
+            if (isOk) {
+                // Create session cookie
+            } else {
+                res.render('userLogin', {title: 'User login', message: 'Invalid credentials'})
+            }
+        })
+}]
+
 // Display the list of users
 exports.user_list = function(req, res, next) {
     userSrv.getUsers(function(err, list) {
@@ -53,13 +89,21 @@ exports.user_create_post = [
                 first_name: req.body.first_name,
                 family_name: req.body.family_name,
                 email: req.body.email,
-                date_of_birth: req.body.date_of_birth
+                date_of_birth: req.body.date_of_birth,
+                password: req.body.password
             });
 
-            user.save(function(err){
-                if (err) {return next(err);}
+            userSrv.saltHashPassword(user.password, function(err, data){
+                if (err) {next(err);}
+                user.password = data.passwordHash;
+                user.salt = data.salt;
 
-                res.redirect(user.url);
+                // User creation
+                user.save(function(err){
+                    if (err) {return next(err);}
+    
+                    res.redirect(user.url);
+                });    
             });
         }
     }
@@ -116,11 +160,27 @@ exports.user_update_post = [
                 _id: req.params.id
             });
 
-            userSrv.updateUser(req.params.id, user, function(err, theUser){
-                if (err) { return next(err); }
-
-                res.redirect(theUser.url);
-            });
+            if (req.body.password !== "") {
+                user.password = req.body.password;
+                userSrv.saltHashPassword(user.password, function(err, data){
+                    if (err) {next(err);}
+                    user.password = data.passwordHash;
+                    user.salt = data.salt;
+    
+                    // User update
+                    userSrv.updateUser(req.params.id, user, function(err, theUser){
+                        if (err) { return next(err); }
+        
+                        res.redirect(theUser.url);
+                    });    
+                });
+            } else {
+                userSrv.updateUser(req.params.id, user, function(err, theUser){
+                    if (err) { return next(err); }
+    
+                    res.redirect(theUser.url);
+                });    
+            }
         }
     }
 ]

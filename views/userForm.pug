@@ -7,6 +7,8 @@ block content
         div.form-group
             label(for='email') Email:
             input#email.form-control(type='email' placeholder='name@email.com' name='email' required='true' value=(undefined===user ? '' : user.email))
+            label(for='password') Password:
+            input#password.form-control(type='password' placeholder="Your password" name='password' required='true')
         div.form-group
             label(for='first_name') First Name:
             input#first_name.form-control(type='text' placeholder='First name (Christian)' name='first_name' required='true' value=(undefined===user ? '' : user.first_name))
